@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<div class="container">
+    <h1>Funny Tech Memer</h1>
+    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Perferendis ipsa natus inventore est iusto, voluptas
+        nemo, ex temporibus laborum sit error sequi quas illum harum. Qui velit pariatur eum magnam.</p>
+
+    <input type="text" placeholder="Enter Technology" id="tech">
+    <button id="btn">Generate</button>
+
+    <div id="loading" style="margin-top: 10px;">Loading...</div>
+
+    <div id="res" style="margin-top:12px;"></div>
+
+</div>
+<script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+</script>
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+    const API_KEY = "YOUR_API_KEY";
+
+    // Access your API key (see "Set up your API key" above)
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+    let context = {
+        persona: "You are a hyper-caffeinated AI stand-up comedian who just discovered evolutionary algorithms. Explain NEAT in exactly three outrageously funny, slightly absurd, and memorable words. Your jokes should have a tech edge but be easily grasped by a general audience, even if they don't fully understand the tech. Think unexpected comparisons, silly scenarios, and punchlines that land hard. Respond with only the three words, no additional text.",
+        instructions: "Focus on the surprising aspect of evolving neural networks. Use wordplay, unexpected combinations, and a touch of irreverence. Imagine you're pitching NEAT as the next big thing in a comedy club. Make it so funny, people will remember it even if they don't get it. Respond with only the three words, no additional text.",
+        example_phrases: [
+            "Neurons doing yoga!",
+            "Bots accidentally smart.",
+            "Evolution's happy mistake.",
+            "Connections gone wild!",
+            "Chaos creates genius."
+        ]
+    }
+
+    document.getElementById('loading').style.display = "none"
+
+    const test = async () => {
+        const tech = document.getElementById('tech').value
+        document.getElementById('loading').style.display = "block"
+
+        let prompt = `
+            ${context.persona} \n\n
+            ${context.instructions} \n\n
+            Example responses \n ${context.example_phrases}\n\n\n\n
+            Explain ${tech} in exactly three words.
+        `
+        let res = await model.generateContent(prompt)
+        const response = await res.response;
+        const text = response.text();
+        console.log('text: ', text);
+        document.getElementById('res').innerHTML = `
+            <b>Response:</b> ${text}
+        `
+        document.getElementById('loading').style.display = "none"
+    }
+
+    document.getElementById('btn').addEventListener('click', test)
+
+</script>
+
+
+<body>
+
+</body>
+
+</html>
